@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.company.wilipop.view.ProductsActivity">
+    <item
+        android:id="@+id/my_chats"
+        android:orderInCategory="100"
+        android:title="@string/my_chats"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_signout"
+        android:orderInCategory="100"
+        android:title="@string/sign_out"
+        app:showAsAction="never" />
+</menu>

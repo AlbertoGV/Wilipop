@@ -1,0 +1,44 @@
+{
+  "project_info": {
+    "project_number": "655547457144",
+    "firebase_url": "https://fir-cfdcb.firebaseio.com",
+    "project_id": "fir-cfdcb",
+    "storage_bucket": "fir-cfdcb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:655547457144:android:3ad89c15348dfb52",
+        "android_client_info": {
+          "package_name": "com.company.wilipop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "655547457144-po4fq0nq93o20na8t72arqnf33g686vl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.company.wilipop",
+            "certificate_hash": "bae4aaa583372fa3bb791bb88fe849b67112bfac"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC92dpMQnfaeIvQ2wYfu1c9GdFnVd3fBlM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "655547457144-f8og4m6pk81ri8rjaq7tiugtr3v16akn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
