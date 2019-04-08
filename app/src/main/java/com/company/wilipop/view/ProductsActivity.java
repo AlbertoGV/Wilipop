@@ -96,7 +96,7 @@ public class ProductsActivity extends AppCompatActivity {
 
             PostViewHolder(@NonNull View itemView) {
                 super(itemView);
-                title = itemView.findViewById(R.id.tvTitle);
+                title = itemView.findViewById(R.id.tvProductDescription);
                 author = itemView.findViewById(R.id.tvSeller);
                 photo = itemView.findViewById(R.id.ivPhoto);
             }
@@ -117,8 +117,8 @@ public class ProductsActivity extends AppCompatActivity {
         protected void onBindViewHolder(@NonNull PostViewHolder holder, final int position, @NonNull final Product product) {
             final String productKey = getRef(position).getKey();
 
-            holder.title.setText(product.title);
-            holder.author.setText(product.sellerName);
+            holder.title.setText(product.description);
+            holder.author.setText(product.displayName);
             Glide.with(holder.itemView.getContext()).load(product.photoUrl).into(holder.photo);
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {

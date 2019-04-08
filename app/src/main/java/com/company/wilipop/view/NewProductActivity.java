@@ -32,7 +32,7 @@ public class NewProductActivity extends AppCompatActivity {
 
     void publishPost(){
         String title   = ((EditText) findViewById(R.id.etTitle)).getText().toString();
-        String uid     = "sellerUid-"+FirebaseAuth.getInstance().getUid();
+        String uid     = "uid-"+FirebaseAuth.getInstance().getUid();
         String author  = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
         String postKey = FirebaseDatabase.getInstance().getReference().push().getKey();
 

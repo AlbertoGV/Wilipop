@@ -32,7 +32,7 @@ public class MyChatsActivity extends AppCompatActivity {
 
         mRef = FirebaseDatabase.getInstance().getReference();
 
-        String uid = "sellerUid-"+ FirebaseAuth.getInstance().getUid();
+        String uid = "uid-"+ FirebaseAuth.getInstance().getUid();
 
         FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<Chat>()
                 .setIndexedQuery(mRef.child("chats/user-chats").child(uid), mRef.child("chats/data"), Chat.class)
@@ -54,7 +54,7 @@ public class MyChatsActivity extends AppCompatActivity {
             public ChatViewHolder(@NonNull View itemView) {
                 super(itemView);
                 lastMessage = itemView.findViewById(R.id.tvLastMessage);
-                title = itemView.findViewById(R.id.tvTitle);
+                title = itemView.findViewById(R.id.tvProductDescription);
                 photo = itemView.findViewById(R.id.ivPhoto);
             }
         }
@@ -74,7 +74,7 @@ public class MyChatsActivity extends AppCompatActivity {
         protected void onBindViewHolder(@NonNull ChatViewHolder holder, final int position, @NonNull final Chat chat) {
             final String chatKey = getRef(position).getKey();
 
-            holder.title.setText(chat.productTitle);
+            holder.title.setText(chat.productDescription);
             holder.lastMessage.setText(chat.lastMessage);
             Glide.with(holder.itemView.getContext()).load(chat.productPhotoUrl).into(holder.photo);
 

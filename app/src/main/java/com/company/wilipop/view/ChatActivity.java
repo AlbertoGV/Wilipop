@@ -1,6 +1,7 @@
 package com.company.wilipop.view;
 
 import android.support.annotation.NonNull;
+import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,8 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.company.wilipop.R;
 import com.company.wilipop.model.Chat;
 import com.company.wilipop.model.Message;
@@ -37,13 +41,14 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         mRef = FirebaseDatabase.getInstance().getReference();
-        uid = "sellerUid-" + FirebaseAuth.getInstance().getUid();
+        uid = "uid-" + FirebaseAuth.getInstance().getUid();
 
         chatKey = getIntent().getStringExtra("CHAT_KEY");
 
         if(chatKey != null) {
             // se ha entrado desde "MyChats", el chat ya existe, cargo los mensajes
-            loadChat(chatKey);
+            loadChatInfo(chatKey);
+            loadMessages(chatKey);
         } else {
             // se ha entrado desde "Products"
             productKey = getIntent().getStringExtra("PRODUCT_KEY");
@@ -56,7 +61,20 @@ public class ChatActivity extends AppCompatActivity {
 
                     if (chatKey != null) {
                         // si ya existe un chat para ese producto cargo los mensajes
-                        loadChat(chatKey);
+                        loadChatInfo(chatKey);
+                        loadMessages(chatKey);
+                    } else {
+                        mRef.child("products/data").child(productKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                Product product = dataSnapshot.getValue(Product.class);
+
+                                showChatInfo(product.photoUrl, product.description, product.displayName);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {}
+                        });
                     }
                 }
 
@@ -69,7 +87,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 final String message = ((EditText) findViewById(R.id.etMessage)).getText().toString();
-                final String messageId = "message-" + mRef.push().getKey();
+                final String messageKey = "message-" + mRef.push().getKey();
 
                 if (chatKey == null) {
                     mRef.child("products/data").child(productKey).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -81,28 +99,54 @@ public class ChatActivity extends AppCompatActivity {
 
                             Chat chat = new Chat();
                             chat.productPhotoUrl = product.photoUrl;
-                            chat.productTitle = product.title;
+                            chat.productDescription = product.description;
                             chat.lastMessage = message;
 
                             mRef.child("products/product-chats").child(productKey).child(uid).setValue(chatKey);
                             mRef.child("chats/data").child(chatKey).setValue(chat);
                             mRef.child("chats/user-chats").child(uid).child(chatKey).setValue(true);
-                            mRef.child("chats/user-chats").child(product.sellerUid).child(chatKey).setValue(true);
+                            mRef.child("chats/user-chats").child(product.uid).child(chatKey).setValue(true);
 
-                            mRef.child("chats/chat-messages").child(chatKey).child(messageId).setValue(new Message(uid, message));
+                            mRef.child("chats/chat-messages").child(chatKey).child(messageKey).setValue(new Message(uid, message));
+
+                            loadChatInfo(chatKey);
+                            loadMessages(chatKey);
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {}
                     });
                 } else {
-                    mRef.child("chats/chat-messages").child(chatKey).child(messageId).setValue(new Message(uid, message));
+                    mRef.child("chats/chat-messages").child(chatKey).child(messageKey).setValue(new Message(uid, message));
                 }
             }
         });
     }
 
-    void loadChat(String chatId) {
+    void loadChatInfo(final String chatKey){
+        mRef.child("chats/data").child(chatKey).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Chat chat = dataSnapshot.getValue(Chat.class);
+                if(chat.buyerUid == uid){
+                    showChatInfo(chat.productPhotoUrl, chat.productDescription, chat.sellerDispalyName);
+                } else {
+                    showChatInfo(chat.productPhotoUrl, chat.productDescription, chat.buyerDisplayName);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+    }
+
+    void showChatInfo(String productPhotoUrl, String productDescription, String otherDisplayName){
+        ((TextView) findViewById(R.id.tvProductDescription)).setText(productDescription);
+        Glide.with(ChatActivity.this).load(productPhotoUrl).into((ImageView) findViewById(R.id.ivProductPhoto));
+        ((TextView) findViewById(R.id.tvOtherDisplayName)).setText(otherDisplayName);
+    }
+
+    void loadMessages(String chatId) {
         FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<Message>()
                 .setQuery(mRef.child("chats/chat-messages").child(chatId), Message.class)
                 .setLifecycleOwner(this)
@@ -115,15 +159,16 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-
     class MessagesAdapter extends FirebaseRecyclerAdapter<Message, MessagesAdapter.MessageViewHolder> {
 
         class MessageViewHolder extends RecyclerView.ViewHolder {
             TextView message;
+            FrameLayout messageLayout;
 
             public MessageViewHolder(@NonNull View itemView) {
                 super(itemView);
                 message = itemView.findViewById(R.id.tvMessage);
+                messageLayout = itemView.findViewById(R.id.messageLayout);
             }
         }
 
@@ -141,6 +186,14 @@ public class ChatActivity extends AppCompatActivity {
         @Override
         protected void onBindViewHolder(@NonNull MessageViewHolder holder, final int position, @NonNull final Message message) {
             holder.message.setText(message.message);
+
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) holder.messageLayout.getLayoutParams();
+            if(message.uid == uid){
+                params.gravity = GravityCompat.END;
+            } else {
+                params.gravity = GravityCompat.START;
+            }
+            holder.messageLayout.setLayoutParams(params);
         }
     }
 }

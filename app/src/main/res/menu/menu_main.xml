@@ -5,12 +5,12 @@
     <item
         android:id="@+id/my_chats"
         android:orderInCategory="100"
-        android:title="@string/my_chats"
+        android:description="@string/my_chats"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_signout"
         android:orderInCategory="100"
-        android:title="@string/sign_out"
+        android:description="@string/sign_out"
         app:showAsAction="never" />
 </menu>
