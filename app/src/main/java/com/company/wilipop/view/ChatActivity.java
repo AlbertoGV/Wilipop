@@ -163,12 +163,10 @@ public class ChatActivity extends AppCompatActivity {
 
         class MessageViewHolder extends RecyclerView.ViewHolder {
             TextView message;
-            FrameLayout messageLayout;
 
             public MessageViewHolder(@NonNull View itemView) {
                 super(itemView);
                 message = itemView.findViewById(R.id.tvMessage);
-                messageLayout = itemView.findViewById(R.id.messageLayout);
             }
         }
 
@@ -186,14 +184,6 @@ public class ChatActivity extends AppCompatActivity {
         @Override
         protected void onBindViewHolder(@NonNull MessageViewHolder holder, final int position, @NonNull final Message message) {
             holder.message.setText(message.message);
-
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) holder.messageLayout.getLayoutParams();
-            if(message.uid == uid){
-                params.gravity = GravityCompat.END;
-            } else {
-                params.gravity = GravityCompat.START;
-            }
-            holder.messageLayout.setLayoutParams(params);
         }
     }
 }
